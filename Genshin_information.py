@@ -9,6 +9,7 @@ import threading
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import os
 
 #Twitter API
 API_key = datas.API_key
@@ -157,7 +158,7 @@ def announcement():
     announcement_label.pack()
 
 #画像ダウンロード関数
-def file_download(p,list_len_json,json_response,media_keys):
+def file_download(p,list_len_json,json_response,media_keys,list_len):
     global path,data_presence_or_absence,download_failed
     media_keys2=media_keys[p]
     media_keys2=str(media_keys2)
@@ -185,6 +186,7 @@ def file_download(p,list_len_json,json_response,media_keys):
                 print(red+bold+"This download key is video"+reset)
                 writeToLog("This download key is video")
                 data_presence_or_absence="no"
+                list_len=list_len-1
             break
         elif json_respomse_check != media_keys2:
             writeToLog("Download key is not the same")
@@ -197,6 +199,7 @@ def file_download(p,list_len_json,json_response,media_keys):
             except:
                 pass
             data_presence_or_absence="no"
+    return list_len
 
 #検索エンドポイントに接続してJSONを取得する関数
 def connect_to_endpoint(url, params):
@@ -276,8 +279,15 @@ def main():
             f.close()
             with open(tweet_text_now_file,'r',encoding="utf-8_sig") as f:
                 file_read = f.read()
-            with open(tweet_text_file,'r',encoding="utf-8_sig") as f:
-                file_read1 = f.read()
+            if os.path.exists(tweet_text_file)==True:
+                with open(tweet_text_file,'r',encoding="utf-8_sig") as f:
+                    file_read1 = f.read()
+            elif os.path.exists(tweet_text_file)==False:
+                f=open(tweet_text_file,'w',encoding="utf-8")
+                f.write("")
+                f.close()
+                with open(tweet_text_file,'r',encoding="utf-8_sig") as f:
+                    file_read1 = f.read()
             #print(file_read1)
             #print(file_read1)
             #txtの内容の確認
@@ -295,16 +305,16 @@ def main():
                     tweet_time = change_time_JST(tweets2.created_at)
                 if list_len==1:
                     for p in range(1):
-                        file_download(p,list_len_json,json_response,media_keys)
+                        list_len=file_download(p,list_len_json,json_response,media_keys,list_len)
                 elif list_len==2:
                     for p in range(2):
-                        file_download(p,list_len_json,json_response,media_keys)
+                        list_len=file_download(p,list_len_json,json_response,media_keys,list_len)
                 elif list_len==3:
                     for p in range(3):
-                        file_download(p,list_len_json,json_response,media_keys)
+                        list_len=file_download(p,list_len_json,json_response,media_keys,list_len)
                 elif list_len==4:
                     for p in range(4):
-                        file_download(p,list_len_json,json_response,media_keys)
+                        list_len=file_download(p,list_len_json,json_response,media_keys,list_len)
                 writeToLog("===================")
                 #print("Tweet id:", json_response_data1['id'])
                 temp=("Tweet text:", json_response_data1['text'])
@@ -372,9 +382,12 @@ def main():
                         requests.post(api_url,headers=TOKEN_dic,data=send_dic2,files=image_dic2)
                         requests.post(api_url,headers=TOKEN_dic,data=send_dic3,files=image_dic3)
                         writeToLog("送信完了")
+                    else:
+                        requests.post(api_url, headers=TOKEN_dic, data=send_dic0)
+                        writeToLog("送信完了")
                 elif data_presence_or_absence=="no":
                     requests.post(api_url, headers=TOKEN_dic, data=send_dic0)
-                    writeToLog("ok")
+                    writeToLog("送信完了")
                 files_error=False
             #待機秒数
             if number_of_trials<=11:
