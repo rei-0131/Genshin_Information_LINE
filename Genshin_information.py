@@ -21,7 +21,7 @@ Access_Token_Secret = datas.Access_Token_Secret
 Bearer_Token = datas.Bearer_Token
 
 #LINE Notify
-TOKEN = datas.line
+TOKEN = datas.server
 api_url = datas.api_url
 
 #各変数の定義
@@ -53,8 +53,8 @@ download_failed=0
 status_code_is_not_200=0
 network_not_found=0
 number_of_executions_count=0
-line_num_txt=17
-line_num_image=16
+line_num_txt=16
+line_num_image=15
 sleeptime_min_hour=datas.sleeptime_min_hour
 sleeptime_min_minute=datas.sleeptime_min_minute
 sleeptime_min_second=datas.sleeptime_min_second
@@ -255,7 +255,7 @@ def sleeptime_set():
             with open(datas_path,mode="r") as files:
                 file_lists=files.read().split("\n")
             for i in range(6):
-                line_num_sleep=i+9
+                line_num_sleep=i+8
                 file_lists[line_num_sleep]=sleeptime_list[i]
             len_file=len(file_lists)
             for i in range(len_file):
